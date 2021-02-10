@@ -1,0 +1,30 @@
+service: YOUR-ORGANIZATION-NAME-datalake
+
+custom:
+  tags: ${file(tags.yml):${self:provider.stage}}
+  prefix: ${self:service}-${self:provider.stage}
+  logFilePrefix: s3/${self:custom.prefix}/datalake
+  awsAdministratorsAccounts: ${file(resources/datalake-kms-administrators/${self:provider.stage}.yml):accounts}
+  resources:
+    shared: ${file(resources/shared-resources.yml)}
+    datalakeIngestion: ${file(resources/datalake-tiers/ingestion.yml)}
+    datalakeProcessing: ${file(resources/datalake-tiers/processing.yml)}
+    datalakeConsumption: ${file(resources/datalake-tiers/consumption.yml)}
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  runtime: python3.7
+  stackTags: ${self:custom.tags}
+  # deploymentBucket: kranio-serverless-deployments
+
+resources:
+  - Resources: ${self:custom.resources.shared.Resources}
+  - Outputs: ${self:custom.resources.shared.Outputs}
+  - Resources: ${self:custom.resources.datalakeIngestion.Resources}
+  - Outputs: ${self:custom.resources.datalakeIngestion.Outputs}
+  - Resources: ${self:custom.resources.datalakeProcessing.Resources}
+  - Outputs: ${self:custom.resources.datalakeProcessing.Outputs}
+  - Resources: ${self:custom.resources.datalakeConsumption.Resources}
+  - Outputs: ${self:custom.resources.datalakeConsumption.Outputs}

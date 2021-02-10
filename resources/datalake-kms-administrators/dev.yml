@@ -1,0 +1,11 @@
+accounts:
+  - Fn::Join:
+      - ':'
+      - - 'arn:aws:iam:'
+        - !Ref AWS::AccountId
+        - user/YOUR-USER-1
+  - Fn::Join:
+      - ':'
+      - - 'arn:aws:iam:'
+        - !Ref AWS::AccountId
+        - user/YOUR-USER-2

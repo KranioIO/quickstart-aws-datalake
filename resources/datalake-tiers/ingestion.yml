@@ -1,0 +1,33 @@
+Resources:
+  S3DataLakeIngestion:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.prefix}-ingestion
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+              KMSMasterKeyID: !Ref DataLakeEncryptionKey
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3BucketDataLakeLogs
+        LogFilePrefix: ${self:custom.logFilePrefix}/ingestion/log-
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+            - Id: StandartIARule
+              Status: Enabled
+              Transitions:
+                - TransitionInDays: '30'
+                  StorageClass: STANDARD_IA
+
+Outputs:
+  S3DataLakeIngestionName:
+    Value: !Ref S3DataLakeIngestion
+    Export:
+      Name: ${self:custom.prefix}-S3DataLakeIngestionName
+
+  S3DataLakeIngestionArn:
+    Value: !GetAtt S3DataLakeIngestion.Arn
+    Export:
+      Name: ${self:custom.prefix}-S3DataLakeIngestionArn

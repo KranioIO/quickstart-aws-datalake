@@ -1,0 +1,26 @@
+Resources:
+  S3DataLakeConsumption:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.prefix}-consumption
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+              KMSMasterKeyID: !Ref DataLakeEncryptionKey
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3BucketDataLakeLogs
+        LogFilePrefix: ${self:custom.logFilePrefix}/consumption/log-
+      VersioningConfiguration:
+        Status: Enabled
+
+Outputs:
+  S3DataLakeConsumptionName:
+    Value: !Ref S3DataLakeConsumption
+    Export:
+      Name: ${self:custom.prefix}-S3DataLakeConsumptionName
+
+  S3DataLakeConsumptionArn:
+    Value: !GetAtt S3DataLakeConsumption.Arn
+    Export:
+      Name: ${self:custom.prefix}-S3DataLakeConsumptionArn
